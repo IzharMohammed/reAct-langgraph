@@ -4,10 +4,22 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx tsx agent.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@langchain/core": "^1.1.1",
+    "@langchain/groq": "^1.0.2",
+    "@langchain/langgraph": "^1.0.2",
+    "dotenv": "^17.2.3",
+    "langchain": "^1.1.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
+  }
 }
