@@ -76,6 +76,27 @@ const testError = tool(({ errorType }) => {
     }),
 });
 
+const calendarEvents = tool(
+    async ({ query }) => {
+        // Google calendar logic goes
+        return JSON.stringify([
+            {
+                title: 'Meeting with Dulqar',
+                date: '3rd Dec 2025',
+                time: '2 PM',
+                location: 'Gmeet',
+            },
+        ]);
+    },
+    {
+        name: 'get-calendar-events',
+        description: 'Call to get the calendar events.',
+        schema: z.object({
+            query: z.string().describe('The query to use in calendar event search.'),
+        }),
+    }
+);
+
 const checkpointer = new MemorySaver();
 
 const model = new ChatGroq({
@@ -86,7 +107,7 @@ const model = new ChatGroq({
 
 const agent = createAgent({
     model,
-    tools: [add, multiply, divide, testError],
+    tools: [add, multiply, divide, testError, calendarEvents],
     middleware: [handleToolErrors, loggingMiddleware],
     checkpointer,
 });
@@ -100,6 +121,10 @@ async function main() {
 
         const result = await agent.invoke({
             messages: [
+                {
+                    role: 'system',
+                    content: `You are a personal assistant. Use provided tools to get the information if you don't have it. Current date and time: ${new Date().toUTCString()}`,
+                },
                 {
                     role: "user",
                     content: input,
