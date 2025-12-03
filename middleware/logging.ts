@@ -16,4 +16,3 @@ export const loggingMiddleware = createMiddleware({
         return result;
     }
 });
-

@@ -4,8 +4,6 @@ export const handleToolErrors = createMiddleware({
     name: "HandleToolErrors",
     wrapToolCall: async (request, handler) => {
         try {
-            console.log("Tool call:", request.toolCall);
-
             return await handler(request);
         } catch (error) {
             console.log("Tool error:", error);

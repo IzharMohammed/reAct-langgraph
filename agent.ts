@@ -4,6 +4,7 @@ import z from "zod";
 import readline from "node:readline/promises";
 import dotenv from 'dotenv'
 import { handleToolErrors, loggingMiddleware } from "./middleware";
+import { MemorySaver } from "@langchain/langgraph";
 
 dotenv.config();
 
@@ -75,6 +76,8 @@ const testError = tool(({ errorType }) => {
     }),
 });
 
+const checkpointer = new MemorySaver();
+
 const model = new ChatGroq({
     model: 'llama-3.3-70b-versatile',
     temperature: 0,
@@ -85,6 +88,7 @@ const agent = createAgent({
     model,
     tools: [add, multiply, divide, testError],
     middleware: [handleToolErrors, loggingMiddleware],
+    checkpointer,
 });
 
 
@@ -101,7 +105,11 @@ async function main() {
                     content: input,
                 },
             ],
-        });
+        },
+            {
+                configurable: { thread_id: "1" }
+            }
+        );
 
         console.log("Agent: ", result.messages[result.messages.length - 1].content);
     }
