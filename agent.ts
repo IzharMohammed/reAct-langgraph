@@ -3,6 +3,7 @@ import { createAgent, createMiddleware, tool, ToolMessage } from "langchain";
 import z from "zod";
 import readline from "node:readline/promises";
 import dotenv from 'dotenv'
+import { handleToolErrors, loggingMiddleware } from "./middleware";
 
 dotenv.config();
 
@@ -80,30 +81,11 @@ const model = new ChatGroq({
     apiKey: process.env.GROQ_API_KEY,
 });
 
-const handleToolErrors = createMiddleware({
-    name: "HandleToolErrors",
-    wrapToolCall: async (request, handler) => {
-        try {
-            console.log("Tool call:", request.toolCall);
-
-            return await handler(request);
-        } catch (error) {
-            console.log("Tool error:", error);
-            // Return a custom error message to the model
-            return new ToolMessage({
-                content: `Tool error: Please check your input and try again. (${error})`,
-                tool_call_id: request.toolCall.id!,
-            });
-        }
-    },
-});
-
 const agent = createAgent({
     model,
     tools: [add, multiply, divide, testError],
-    middleware: [handleToolErrors],
+    middleware: [handleToolErrors, loggingMiddleware],
 });
-
 
 
 async function main() {

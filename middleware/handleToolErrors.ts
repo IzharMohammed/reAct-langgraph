@@ -1,0 +1,19 @@
+import { createAgent, createMiddleware, tool, ToolMessage } from "langchain";
+
+export const handleToolErrors = createMiddleware({
+    name: "HandleToolErrors",
+    wrapToolCall: async (request, handler) => {
+        try {
+            console.log("Tool call:", request.toolCall);
+
+            return await handler(request);
+        } catch (error) {
+            console.log("Tool error:", error);
+            // Return a custom error message to the model
+            return new ToolMessage({
+                content: `Tool error: Please check your input and try again. (${error})`,
+                tool_call_id: request.toolCall.id!,
+            });
+        }
+    },
+});
